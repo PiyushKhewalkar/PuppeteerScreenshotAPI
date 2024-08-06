@@ -1,5 +1,5 @@
 const express = require('express');
-const puppeteer = require('puppeteer');
+const chromium = require('chrome-aws-lambda');
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -10,10 +10,16 @@ app.get('/screenshot', async (req, res) => {
     }
 
     try {
-        const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+        const browser = await chromium.puppeteer.launch({
+            args: chromium.args,
+            defaultViewport: chromium.defaultViewport,
+            executablePath: await chromium.executablePath,
+            headless: chromium.headless,
+        });
+
         const page = await browser.newPage();
         await page.goto(url, { waitUntil: 'networkidle2' });
-        const screenshot = await page.screenshot();
+        const screenshot = await page.screenshot({ encoding: 'binary' });
         await browser.close();
         res.setHeader('Content-Type', 'image/png');
         res.send(screenshot);
