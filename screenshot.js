@@ -10,7 +10,7 @@ app.get('/screenshot', async (req, res) => {
 
   try {
     const browser = await puppeteer.launch({
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: 'networkidle2' });
@@ -18,7 +18,7 @@ app.get('/screenshot', async (req, res) => {
     await browser.close();
     res.type('image/png').send(screenshot);
   } catch (err) {
-    console.error(err);
+    console.error('Error generating screenshot:', err);
     res.status(500).send('Error generating screenshot');
   }
 });
